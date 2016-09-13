@@ -2,6 +2,7 @@
 
 const ctx = new (window.AudioContext || window.webkitAudioContext);
 var started = false;
+var muted = false;
 const oscillator = ctx.createOscillator();
 
 
@@ -11,6 +12,7 @@ oscillator.connect(gainNode);
 gainNode.connect(ctx.destination);
 
 function sound(freq, ms) {
+    if (muted) return new Promise(()=>{});
     if (!started) oscillator.start();
     started = true;
     oscillator.type = 'sine';
@@ -42,7 +44,13 @@ function melody(m) {
     index = 0;
     next();
 }
+window.toggleSound = () => {
+    muted = !muted;
+    if (muted) {
+        gainNode.gain.value = 0.0;
+    }
 
+};
 window.sound = sound;
 window.melody = melody;
 
